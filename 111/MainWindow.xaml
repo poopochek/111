@@ -25,7 +25,7 @@
                 
                 </Grid.RowDefinitions>
         </Grid>
-        <Button x:Name="Btn_Lösen" Content="Lösen" Grid.Column="1"/>
+        <Button x:Name="Btn_Lösen" Content="Lösen" Grid.Column="1" Click="Btn_Lösen_Click"/>
 
     </Grid>
 </Window>
