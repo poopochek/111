@@ -12,20 +12,25 @@
             <ColumnDefinition Width ="1* "/>
         </Grid.ColumnDefinitions>
         <Grid x:Name="Matrix" Grid.Column="0" Background="LightYellow">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
+           
+        </Grid>
+        <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
                 <RowDefinition Height="1*"/>
-                
-                </Grid.RowDefinitions>
-        </Grid>
-        <Button x:Name="Btn_Lösen" Content="Lösen" Grid.Column="1" Click="Btn_Lösen_Click"/>
+                <RowDefinition Height="9*"/>
 
+            </Grid.RowDefinitions>
+            <Button x:Name="Btn_Lösen" Content="Lösen" Grid.Row="2" Click="Btn_Lösen_Click"/>
+            <TextBlock Text="Anzahl der Gleichungen:" FontSize="18" Grid.Row="0"/>
+            <ComboBox x:Name="Menu" Grid.Row="1" SelectionChanged="Menu_SelectionChanged">
+                <ComboBoxItem Content="2"/>
+                <ComboBoxItem Content="3"/>
+                <ComboBoxItem Content="4"/>
+                <ComboBoxItem Content="5"/>
+            </ComboBox>
+        </Grid>
+        
     </Grid>
 </Window>

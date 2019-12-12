@@ -20,17 +20,41 @@ namespace _111
     /// </summary>
     public partial class MainWindow : Window
     {
-        TextBox[,] Ta = new TextBox[3, 3];
-        TextBox[] Tb = new TextBox[3];
+        TextBox[,] Ta;
+        TextBox[] Tb;
+        int N = 3;
         public MainWindow()
         {
             InitializeComponent();
-            for (int i = 0; i < 3; i++ )
+            MatrixErstellen(N); 
+        
+        }
+
+        private void MatrixErstellen (int n)
+        {
+            Ta = new TextBox[n, n];
+            Tb = new TextBox[n];
+
+            for(int zeilen = 0; zeilen<n; zeilen++ )
             {
-                for ( int j = 0; j < 3; j++)
+                RowDefinition rd = new RowDefinition();
+                rd.Height = new GridLength(1, GridUnitType.Star);
+                Matrix.RowDefinitions.Add(rd);
+            }
+            for(int spalten = 0; spalten < n + 1; spalten ++)
+            {
+                ColumnDefinition cd = new ColumnDefinition();
+                cd.Width = new GridLength(1, GridUnitType.Star);
+                Matrix.ColumnDefinitions.Add(cd);
+            }
+
+
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
                 {
                     TextBox x = new TextBox();
-                   // x.Text = i + " ; " + j;
+                    // x.Text = i + " ; " + j;
                     x.FontSize = 20;
                     Matrix.Children.Add(x);
                     Grid.SetColumn(x, j);
@@ -38,24 +62,22 @@ namespace _111
                     Ta[i, j] = x;
                 }
                 TextBox y = new TextBox();
-               // y.Text = i.ToString();
+                // y.Text = i.ToString();
                 y.FontSize = 20;
                 Matrix.Children.Add(y);
-                Grid.SetColumn(y, 3);
+                Grid.SetColumn(y, n);
                 Grid.SetRow(y, i);
                 Tb[i] = y;
             }
-
-           
         }
 
         private void Btn_Lösen_Click(object sender, RoutedEventArgs e)
         {
-            double[,] GS = new double[3, 3];
-            double[] L  = new double[3];
-            for (int i = 0; i < 3; i++)
+            double[,] GS = new double[N, N];
+            double[] L  = new double[N];
+            for (int i = 0; i < N; i++)
             {
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < N; j++)
                 {
                     GS[i, j] = Convert.ToDouble(Ta[i, j].Text);
 
@@ -65,13 +87,13 @@ namespace _111
             // Lösung berechnen
             double p0, p1, g;
            
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < N; i++)
             {
                 //evtl Zeilen tauschen
-                int Zähler = 0;
+                int Zähler = 1;
                 while (GS[i, i] == 0.0)
                 {
-                    if(Zähler == 3)
+                    if(Zähler == N)
                     {
                         MessageBox.Show("Das Gleichungssystem hat keine eindeutige Lösung.");
                         goto Ende;
@@ -82,18 +104,30 @@ namespace _111
                     Zähler++;
                 }
                 g = GS[i, i];
-                p0 = GS[(i + 1) % 3, i];
-                p1 = GS[(i + 2) % 3, i];
-                for (int j = 0; j < 3; j++)
+                double[] p = new double [N - 1];
+                for(int k = 1; k <N; k++)
+                {
+                    p[k -1] = GS[(i + k) % N, i];
+                }
+               // p0 = GS[(i + 1) % 3, i];
+               // p1 = GS[(i + 2) % 3, i];
+                for (int j = 0; j < N; j++)
                 {
                     GS[i, j] /= g;
-                    GS[(i + 1) % 3, j] += GS[i, j]*(-1)*p0;
-                    GS[(i + 2) % 3, j] += GS[i, j] * (-1) * p1;
+                    for (int k=1; k<N; k++)
+                    {
+                        GS[(i + k) % N, j] += GS[i, j] * (-1) * p[k-1];
+                    }
+                   // GS[(i + 1) % 3, j] += GS[i, j]*(-1)*p0;
+                    //GS[(i + 2) % 3, j] += GS[i, j] * (-1) * p1;
                 }
-                L[i] /= g; 
-               
-                L[(i + 1) % 3] +=  L[i]*(-1)*p0;
-                L[(i + 2) % 3] += L[i] * (-1) * p1;
+                L[i] /= g;
+                for (int k = 1; k < N; k++)
+                {
+                    L[(i + k) % N] += L[i] * (-1) * p[k-1];
+                }
+                //L[(i + 1) % 3] +=  L[i]*(-1)*p0;
+                //L[(i + 2) % 3] += L[i] * (-1) * p1;
                 Ausgabe(GS, L);
                 MessageBox.Show("Schritt: " + i);
             }
@@ -104,9 +138,9 @@ namespace _111
 
         private void Ausgabe (double [,] GSA, double [] LA)
         {
-            for (int i = 0; i < 3; i++ )
+            for (int i = 0; i < N; i++ )
             {
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < N; j++)
                 {
                     Ta[i, j].Text = GSA[i, j].ToString();
                 }
@@ -116,7 +150,7 @@ namespace _111
         private void ZeileTauschen (double[,] GSA, double[] LA, int zeile1, int zeile2)
         {
             double temp = 0;
-            for (int j = 0; j < 3; j++)
+            for (int j = 0; j < N; j++)
             {
                 temp = GSA[zeile1, j];
                 GSA[zeile1, j] = GSA[zeile2, j];
@@ -125,6 +159,15 @@ namespace _111
             temp = LA[zeile1];
             LA[zeile1] = LA[zeile2];
             LA[zeile2] = temp;
+        }
+
+        private void Menu_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            Matrix.Children.Clear();
+            Matrix.ColumnDefinitions.Clear();
+            Matrix.RowDefinitions.Clear();
+            N = Menu.SelectedIndex + 2;
+            MatrixErstellen(N);
         }
     }
 }
